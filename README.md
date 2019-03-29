@@ -2,7 +2,7 @@
 
 ## 简介
 
-红外框架，基于 `rt-thread` 的 `pin` 和 `hwtimer` 驱动实现的红外框架。
+红外框架，基于 `rt-thread` 的 `pin` , `hwtimer` 和 `pwm` 驱动实现的红外框架。
 
 ## 驱动框架
 
@@ -17,7 +17,6 @@ infrared
 ├───docs                            // 文档
 ├───inc                             // 头文件
 ├───src                             // 源文件				
-├───samples                         // 示例代码
 │───LICENSE                         // 软件包许可证
 │───README.md                       // 软件包使用说明
 └───SConscript                      // RT-Thread 默认的构建脚本
@@ -70,5 +69,5 @@ RT-Thread online packages
 
 ### 联系方式 & 感谢
 
-- 维护：来一颗糖
-- 主页：https://github.com/balanceTWK/Infrared_frame
+- 维护：RT-Thread 开发团队
+- 主页：https://github.com/RT-Thread-packages/infrared_framework
