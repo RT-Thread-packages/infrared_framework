@@ -100,7 +100,10 @@ rt_err_t driver_report_raw_data(rt_uint8_t level,rt_uint32_t us)/* Low-level dri
 
 struct infrared_class* infrared_init(void)/* Initializes the necessary functions of the decoder */
 {
-    infrared.ringbuff = rt_ringbuffer_create((INFRARED_BUFF_SIZE*(sizeof(struct ir_raw_data))));
+    if(!infrared.ringbuff)
+    {
+        infrared.ringbuff = rt_ringbuffer_create((INFRARED_BUFF_SIZE*(sizeof(struct ir_raw_data))));
+    }
 
     return &infrared;
 }

@@ -22,15 +22,27 @@
 static struct decoder_class nec_decoder;
 static struct rt_ringbuffer *ringbuff;
 
-struct nec_data_struct nec_data_buf[NEC_BUFF_SIZE];
+static struct ir_raw_data *read_raw_data;
+static struct ir_raw_data *write_raw_data;
 
 static rt_err_t nec_decoder_init(void)
 {
-    ringbuff = rt_ringbuffer_create(sizeof(nec_data_buf));
-    if(ringbuff)
+    if((!ringbuff)||(!read_raw_data)||(write_raw_data))
     {
-        nec_decoder.user_data = ringbuff;
-        return RT_EOK;
+        ringbuff = rt_ringbuffer_create(sizeof(struct nec_data_struct)*NEC_BUFF_SIZE);
+
+        read_raw_data = rt_malloc(sizeof(struct ir_raw_data)*200);
+        write_raw_data = rt_malloc(sizeof(struct ir_raw_data)*100);
+
+        if(ringbuff)
+        {
+            nec_decoder.user_data = ringbuff;
+            return RT_EOK;
+        }
+        else
+        {
+            return -RT_ERROR;
+        }
     }
     else
     {
@@ -41,6 +53,8 @@ static rt_err_t nec_decoder_init(void)
 static rt_err_t nec_decoder_deinit(void)
 {
     rt_ringbuffer_destroy(ringbuff);
+    rt_free(read_raw_data);
+    rt_free(write_raw_data);
     return RT_EOK;
 }
 
@@ -65,8 +79,7 @@ static rt_err_t nec_decoder_control(int cmd, void *arg)
 static rt_err_t nec_decoder_decode(rt_size_t size)
 {
     static rt_uint8_t nec_state = 0;
-    struct ir_raw_data raw_data[200];
-    
+
     static struct ir_raw_data state_code[2];
     
     static struct nec_data_struct nec_data;
@@ -81,24 +94,24 @@ static rt_err_t nec_decoder_decode(rt_size_t size)
         {
             for(rt_uint8_t i=0; i<65; i++)
             {
-                decoder_read_data(&raw_data[i]);
-                if(raw_data[i].level == IDLE_SIGNAL)
+                decoder_read_data(&read_raw_data[i]);
+                if(read_raw_data[i].level == IDLE_SIGNAL)
                 {
                     LOG_D("IDLE_SIGNAL,LINE:%d",__LINE__);
-                    if((raw_data[i].us>1600)&&(raw_data[i].us<1800))
+                    if((read_raw_data[i].us>1600)&&(read_raw_data[i].us<1800))
                     {
                         LOG_D(" 1 LINE:%d",__LINE__);
                         command <<= 1;
                         command |= 1;
                     }
-                    else if((raw_data[i].us>450)&&(raw_data[i].us<650))
+                    else if((read_raw_data[i].us>450)&&(read_raw_data[i].us<650))
                     {
                         LOG_D(" 0 LINE:%d",__LINE__);
                         command <<= 1;
                         command |= 0;
                     }
                 }
-                else if((i == 64)&&((raw_data[i].us>450)&&(raw_data[i].us<650)))
+                else if((i == 64)&&((read_raw_data[i].us>450)&&(read_raw_data[i].us<650)))
                 {
                     t1 = command >> 8;
                     t2 = command;
@@ -182,7 +195,6 @@ static rt_err_t nec_decoder_decode(rt_size_t size)
 
 static rt_err_t nec_decoder_write(struct infrared_decoder_data* data)
 {
-    struct ir_raw_data raw_data[100];
     rt_uint8_t addr,key;
     rt_uint32_t data_buff;
 
@@ -192,34 +204,34 @@ static rt_err_t nec_decoder_write(struct infrared_decoder_data* data)
     data_buff = ((addr & 0xFF) << 24) + ((~addr & 0xFF) << 16) + ((key & 0xff) << 8) + (~key & 0xFF);
 
     /* guidance code */
-    raw_data[0].level = CARRIER_WAVE;
-    raw_data[0].us = 9000;
-    raw_data[1].level = IDLE_SIGNAL;
-    raw_data[1].us = 4500;
+    write_raw_data[0].level = CARRIER_WAVE;
+    write_raw_data[0].us = 9000;
+    write_raw_data[1].level = IDLE_SIGNAL;
+    write_raw_data[1].us = 4500;
 
     for(rt_uint8_t index = 0; index < 64; index+=2)
     {
         if(((data_buff << (index/2)) & 0x80000000))  /* Logic 1 */
         {
-            raw_data[2+index].level = CARRIER_WAVE;
-            raw_data[2+index].us = 560;
-            raw_data[2+index+1].level = IDLE_SIGNAL;
-            raw_data[2+index+1].us = 1690;
+            write_raw_data[2+index].level = CARRIER_WAVE;
+            write_raw_data[2+index].us = 560;
+            write_raw_data[2+index+1].level = IDLE_SIGNAL;
+            write_raw_data[2+index+1].us = 1690;
         }
         else                                         /* Logic 0 */
         {
-            raw_data[2+index].level = CARRIER_WAVE;
-            raw_data[2+index].us = 560;
-            raw_data[2+index+1].level = IDLE_SIGNAL;
-            raw_data[2+index+1].us = 560;
+            write_raw_data[2+index].level = CARRIER_WAVE;
+            write_raw_data[2+index].us = 560;
+            write_raw_data[2+index+1].level = IDLE_SIGNAL;
+            write_raw_data[2+index+1].us = 560;
         }
     }
 
     /* epilog code */
-    raw_data[66].level = CARRIER_WAVE;
-    raw_data[66].us = 560;
-    raw_data[67].level = IDLE_SIGNAL;
-    raw_data[67].us = 43580;
+    write_raw_data[66].level = CARRIER_WAVE;
+    write_raw_data[66].us = 560;
+    write_raw_data[67].level = IDLE_SIGNAL;
+    write_raw_data[67].us = 43580;
 
     if(data->data.nec.repeat>8)
     {
@@ -228,18 +240,18 @@ static rt_err_t nec_decoder_write(struct infrared_decoder_data* data)
     /* repetition code */
     for(rt_uint32_t i=0; i<(4 * data->data.nec.repeat); i+=4)
     {
-        raw_data[68+i].level = CARRIER_WAVE;
-        raw_data[68+i].us = 9000;
-        raw_data[68+i+1].level = IDLE_SIGNAL;
-        raw_data[68+i+1].us = 2250;
-        raw_data[68+i+2].level = CARRIER_WAVE;
-        raw_data[68+i+2].us = 560;
-        raw_data[68+i+3].level = IDLE_SIGNAL;
-        raw_data[68+i+3].us = 43580;
+        write_raw_data[68+i].level = CARRIER_WAVE;
+        write_raw_data[68+i].us = 9000;
+        write_raw_data[68+i+1].level = IDLE_SIGNAL;
+        write_raw_data[68+i+1].us = 2250;
+        write_raw_data[68+i+2].level = CARRIER_WAVE;
+        write_raw_data[68+i+2].us = 560;
+        write_raw_data[68+i+3].level = IDLE_SIGNAL;
+        write_raw_data[68+i+3].us = 43580;
     }
 
     LOG_D("%d size:%d + %d",sizeof(struct ir_raw_data),68 ,(data->data.nec.repeat) * 4);
-    decoder_write_data(raw_data,68 + (data->data.nec.repeat) * 4);
+    decoder_write_data(write_raw_data,68 + (data->data.nec.repeat) * 4);
 
     rt_thread_mdelay(200);
 
