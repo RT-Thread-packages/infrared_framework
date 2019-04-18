@@ -19,6 +19,7 @@
 #include <rtdbg.h>
 
 #ifdef PKG_USING_INFRARED
+#ifdef PKG_USING_DRV_INFRARED
 
 static struct infrared_class* infrared;
 
@@ -263,4 +264,5 @@ int drv_infrared_init()
 }
 INIT_APP_EXPORT(drv_infrared_init);
 
+#endif /* PKG_USING_DRV_INFRARED */
 #endif /* PKG_USING_INFRARED */
