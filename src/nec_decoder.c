@@ -276,6 +276,6 @@ int nec_decoder_register()
     ir_decoder_register(&nec_decoder);
     return 0;
 }
-INIT_APP_EXPORT(nec_decoder_register);
+INIT_PREV_EXPORT(nec_decoder_register);
 
 #endif /* INFRARED_NEC_DECODER */
