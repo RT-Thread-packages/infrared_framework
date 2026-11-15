@@ -146,9 +146,21 @@ INIT_APP_EXPORT(my_ir_init);
 
 详细源码与配置说明：[架构](doc/architecture.md) · [接收](doc/reception.md) · [发送及 NEC](doc/transmission-codec.md) · [配置](doc/configuration.md) · [诊断](doc/maintenance.md)。
 
+## 文档与持续集成
+
+- [在线文档（GitHub Pages）](https://wdfk-prog.github.io/infrared_framework/)：架构、配置、诊断与移植指南。
+- [Doxygen API 参考](https://wdfk-prog.github.io/infrared_framework/api/)：C API、类型和源码浏览。
+- [CI 与 STM32F407 编译矩阵](doc/ci.md)：包含 LEGACY/FRAMEWORK、Cppcheck、Doxygen 和 Pages 的验证说明。
+
 ## 联系方式 & 感谢
 
+- 当前维护：[wdfk-prog](https://github.com/wdfk-prog)
+- GitHub 主页：https://github.com/wdfk-prog
+- 个人主页：https://wdfk-prog.space/
+- 联系邮箱：[1425075683@qq.com](mailto:1425075683@qq.com)
 - 原维护：RT-Thread 开发团队
 - 原项目主页：https://github.com/RT-Thread-packages/infrared_framework
 - 许可证：[Apache-2.0](LICENSE)
+
+感谢 RT-Thread 开发团队与原项目贡献者的工作。欢迎通过 GitHub Issues 反馈问题和改进建议。
 

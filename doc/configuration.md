@@ -1,6 +1,6 @@
 # 配置、构建与设备接入
 
-[返回 README](../README.md) · [架构](architecture.md) · [维护](maintenance.md)
+[返回文档首页](index.md) · [架构](architecture.md) · [维护](maintenance.md)
 
 ## 1. 配置入口
 

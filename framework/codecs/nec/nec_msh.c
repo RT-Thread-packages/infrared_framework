@@ -86,11 +86,7 @@ static rt_err_t infrared_nec_hex_byte(const char *text, rt_uint8_t *value)
     return RT_EOK;
 }
 
-/**
- * @brief Dispatch NEC read and transmit operations after checking codec ownership.
- * @param argc Argument count without the three generic MSH command words.
- * @param argv NEC-specific arguments.
- */
+/* Check NEC codec ownership before dispatching its read/transmit commands. */
 void infrared_nec_msh(int argc, char **argv)
 {
     rt_size_t index;                /* Stable registered device index. */

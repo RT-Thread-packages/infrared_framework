@@ -1,0 +1,5 @@
+# Local and CI-only generated outputs
+_ci/
+site/
+__pycache__/
+*.py[cod]
