@@ -611,7 +611,7 @@ rt_size_t infrared_device_write_frames(struct infrared_device *device,
                                        const struct infrared_frame *frames, rt_size_t count)
 {
     rt_size_t completed = 0;
-    rt_err_t ret = RT_EOK;
+    rt_err_t ret;
     struct infrared_tx_buffer *buffer; /* View of backend-owned TX storage. */
 #if IR_CFG_CHECK_PARAMETERS
     if (!device || !frames || !device->registered || !device->opened ||
@@ -672,7 +672,7 @@ rt_size_t infrared_device_write_frames(struct infrared_device *device,
 static rt_err_t infrared_rt_open(rt_device_t dev, rt_uint16_t flags)
 {
     struct infrared_device *ir = (struct infrared_device *)dev;
-    rt_err_t ret = RT_EOK;
+    rt_err_t ret;
     rt_err_t close_ret; /* One rollback attempt; preserve the original open error. */
     (void)flags;
     if (ir->opened)
@@ -800,6 +800,13 @@ static rt_err_t infrared_rt_close(rt_device_t dev)
     return ret;
 }
 
+/* RT-Thread 5.0.0 changed device read/write callbacks to signed sizes. */
+#if defined(RT_VERSION_MAJOR) && (RT_VERSION_MAJOR >= 5)
+#define IR_DEVICE_IO_RESULT_T rt_ssize_t
+#else
+#define IR_DEVICE_IO_RESULT_T rt_size_t
+#endif /* RT_VERSION_MAJOR >= 5 */
+
 /**
  * @brief Read an array of completed frames from the infrared logical device.
  * @param dev Address of infrared_device.parent.
@@ -808,7 +815,7 @@ static rt_err_t infrared_rt_close(rt_device_t dev)
  * @param size Array capacity in frames, not bytes.
  * @return Number of complete frames copied.
  */
-static rt_size_t infrared_rt_read(rt_device_t dev, rt_off_t pos, void *buffer, rt_size_t size)
+static IR_DEVICE_IO_RESULT_T infrared_rt_read(rt_device_t dev, rt_off_t pos, void *buffer, rt_size_t size)
 {
     struct infrared_device *ir = (struct infrared_device *)dev;
     (void)pos;
@@ -836,7 +843,7 @@ rt_size_t infrared_device_read_frames(struct infrared_device *device,
                                       struct infrared_frame *frames, rt_size_t count)
 {
 #if IR_CFG_CHECK_PARAMETERS
-    if (!device || !frames || !device->opened || !count)
+    if (!device || !frames)
     {
         return 0;
     }
@@ -856,7 +863,7 @@ rt_size_t infrared_device_read_frames(struct infrared_device *device,
  * @param size Requested frame count, not byte count.
  * @return Number of complete frames transmitted.
  */
-static rt_size_t infrared_rt_write(rt_device_t dev, rt_off_t pos, const void *buffer, rt_size_t size)
+static IR_DEVICE_IO_RESULT_T infrared_rt_write(rt_device_t dev, rt_off_t pos, const void *buffer, rt_size_t size)
 {
     (void)pos;
     return infrared_device_write_frames((struct infrared_device *)dev,

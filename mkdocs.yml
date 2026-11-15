@@ -1,0 +1,30 @@
+site_name: Infrared Framework for RT-Thread
+site_description: RT-Thread infrared device, capture, PWM and protocol framework
+site_url: https://wdfk-prog.github.io/infrared_framework/
+repo_url: https://github.com/wdfk-prog/infrared_framework
+repo_name: wdfk-prog/infrared_framework
+
+docs_dir: doc
+site_dir: site
+
+theme:
+  name: material
+  language: zh
+  features:
+    - navigation.sections
+    - content.code.copy
+
+nav:
+  - 首页: index.md
+  - 系统架构: architecture.md
+  - 接收与采样: reception.md
+  - 发送与协议编解码: transmission-codec.md
+  - 参数配置与移植: configuration.md
+  - 维护与诊断: maintenance.md
+  - CI 与文档发布: ci.md
+
+markdown_extensions:
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.superfences

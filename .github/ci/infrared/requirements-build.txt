@@ -1,0 +1,3 @@
+kconfiglib==14.1.0
+psutil==7.0.0
+scons==4.8.1

@@ -1,6 +1,6 @@
 # 架构与资源生命周期
 
-[返回 README](../README.md) · [接收](reception.md) · [发送与 Codec](transmission-codec.md) · [配置](configuration.md)
+[返回文档首页](index.md) · [接收](reception.md) · [发送与 Codec](transmission-codec.md) · [配置](configuration.md)
 
 ## 1. 工程边界与构建关系
 

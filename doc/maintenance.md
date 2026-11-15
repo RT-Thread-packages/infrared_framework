@@ -1,6 +1,6 @@
 # 诊断与维护
 
-[返回 README](../README.md) · [配置](configuration.md) · [接收](reception.md) · [发送](transmission-codec.md)
+[返回文档首页](index.md) · [配置](configuration.md) · [接收](reception.md) · [发送](transmission-codec.md)
 
 ## 1. 可选 MSH
 

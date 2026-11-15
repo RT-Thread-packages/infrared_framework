@@ -1,6 +1,6 @@
 # 发送、包络定时与 NEC Codec
 
-[返回 README](../README.md) · [架构](architecture.md) · [配置](configuration.md)
+[返回文档首页](index.md) · [架构](architecture.md) · [配置](configuration.md)
 
 ## 1. 发送调用链
 

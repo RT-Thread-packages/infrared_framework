@@ -1,6 +1,6 @@
 # 接收链路：采样、解码、事件通知
 
-[返回 README](../README.md) · [架构](architecture.md) · [配置](configuration.md)
+[返回文档首页](index.md) · [架构](architecture.md) · [配置](configuration.md)
 
 ## 1. 两级队列及处理边界
 
